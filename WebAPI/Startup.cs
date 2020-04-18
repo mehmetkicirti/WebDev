@@ -33,6 +33,12 @@ namespace WebAPI
             //Fakat biz bunu Autofac gibi Aop altyapýsýný saglayan yapýlarý kullanýrýz interception aop destekledigi için business a tasýrýz normalde.
             services.AddSingleton<IBookService,BookManager>();//BookMAnager ý new liyor referansýný IBookServise atýyor
             services.AddSingleton<IBookDal, EfBookDal>();//new liyor bookDalý constructor da kim istiyorsa IbookDaldan bir nesne ona veriyor.
+            //güvenlik problemini aþmak icin  4200 nolu bir adresten istek gelirse izin ver 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowOrigin",
+                    builder => builder.WithOrigins("http://localhost:4200"));
+            });
             services.AddControllers();
         }
 
@@ -43,6 +49,8 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+            //tüm isteklere izin ver diyoruz.
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
@@ -54,6 +62,7 @@ namespace WebAPI
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }
